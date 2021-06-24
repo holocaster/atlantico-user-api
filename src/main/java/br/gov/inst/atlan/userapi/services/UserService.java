@@ -1,0 +1,63 @@
+package br.gov.inst.atlan.userapi.services;
+
+import br.gov.inst.atlan.userapi.domain.User;
+import br.gov.inst.atlan.userapi.exceptions.UserNotFoundException;
+import br.gov.inst.atlan.userapi.repositories.UserRepository;
+import br.gov.inst.atlan.userapi.rest.v1.dto.UserDTO;
+import br.gov.inst.atlan.userapi.rest.v1.dto.UserDTOPagedList;
+import br.gov.inst.atlan.userapi.rest.v1.mappers.UserMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    private User findByUserId(UUID userId) {
+        return this.userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o id: " + userId));
+    }
+
+    public UserDTO findById(UUID userId) {
+        return this.userMapper.userToUserDTO(this.findByUserId(userId));
+    }
+
+    public UserDTOPagedList listUsers(PageRequest pageRequest) {
+        Page<User> userPage = this.userRepository.findAll(pageRequest);
+        Stream<UserDTO> userDTOStream = userPage.getContent().stream().map(this.userMapper::userToUserDTO);
+        return new UserDTOPagedList(userDTOStream.collect(Collectors.toList()), PageRequest.of(userPage.getPageable().getPageNumber(), userPage.getPageable().getPageSize()),
+                userPage.getTotalElements());
+    }
+
+    @Transactional
+    public UserDTO insertUser(UserDTO userDTO) {
+        userDTO.setId(null);
+        User user = this.userMapper.userDtoToUser(userDTO);
+        this.userRepository.save(user);
+        return this.userMapper.userToUserDTO(user);
+    }
+
+    public void updateUser(UUID userId, UserDTO userDTO) {
+
+    }
+
+    public void deleteUser(UUID userId) {
+        User user = this.findByUserId(userId);
+        this.userRepository.delete(user);
+    }
+}
