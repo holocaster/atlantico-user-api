@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  jms:
+    image: rabbitmq:management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+  eureka:
+    image: prcompany/atlantico-discovery-server
+    ports:
+      - 8761:8761
+  config:
+    image: prcompany/atlantico-config-server
+    ports:
+      - 8888:8888
+    depends_on:
+      - eureka
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://netflix:eureka@eureka:8761/eureka
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: 'true'
+  db:
+    image: postgres:11.12-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password
+  user-api:
+    image: prcompany/atlantico-user-api
+    ports:
+      - 8080:8080
+    depends_on:
+      - jms
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: reunion
+      DB_USER: postgres
+      DB_PASSWORD: password
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://netflix:eureka@eureka:8761/eureka
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: 'true'
+      RABBITMQ_HOST: jms
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+    restart: on-failure
