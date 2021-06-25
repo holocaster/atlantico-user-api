@@ -6,11 +6,13 @@ import br.gov.inst.atlan.userapi.repositories.UserRepository;
 import br.gov.inst.atlan.userapi.rest.v1.dto.UserDTO;
 import br.gov.inst.atlan.userapi.rest.v1.dto.UserDTOPagedList;
 import br.gov.inst.atlan.userapi.rest.v1.mappers.UserMapper;
+import br.gov.inst.atlan.userapi.security.UserSS;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,18 @@ public class UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    /**
+     * Retorna o usuário vinculado a sessão
+     * @return UserSS
+     */
+    public static UserSS authenticated() {
+        try {
+            return (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     private User findByUserId(UUID userId) {
         return this.userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o id: " + userId));

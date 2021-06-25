@@ -12,4 +12,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Transactional(readOnly = true)
     public User findByEmailIgnoreCase(final String name);
+
+    @Transactional(readOnly = true)
+    public User findByLoginIgnoreCase(final String login);
 }

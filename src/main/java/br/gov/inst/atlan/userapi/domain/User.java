@@ -1,9 +1,7 @@
 package br.gov.inst.atlan.userapi.domain;
 
 import br.gov.inst.atlan.userapi.domain.enums.SimNaoEnum;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
@@ -16,7 +14,9 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Builder
 public class User {
 
     @Id
@@ -48,7 +48,11 @@ public class User {
     @Column(name = "login", length = 50, nullable = false, unique = true)
     private String login;
 
-    @Column(name = "password", length = 30, nullable = false)
+    @Column(name = "password", length = 200, nullable = false)
     private String password;
+
+    public boolean isAdmin() {
+        return SimNaoEnum.SIM.equals(this.admin);
+    }
 
 }
