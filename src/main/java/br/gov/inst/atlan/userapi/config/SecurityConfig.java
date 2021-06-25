@@ -27,7 +27,7 @@ import java.util.Arrays;
 // Permite colocar que endpoints sejam acessados por perfis especificos
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String[] PUBLIC_MATCHERS = {"/h2-console/**"};
+    private static final String[] PUBLIC_MATCHERS = {"/h2-console/**" , "/login**"};
 
 
     @Autowired

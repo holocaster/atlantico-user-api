@@ -1,5 +1,9 @@
 version: '3.8'
 services:
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
   jms:
     image: rabbitmq:management-alpine
     ports:
@@ -31,7 +35,9 @@ services:
     depends_on:
       - jms
       - db
+      - redis
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DB_HOST: db
       DB_PORT: 5432
       DB_NAME: reunion
@@ -43,4 +49,7 @@ services:
       RABBITMQ_PORT: 5672
       RABBITMQ_USER: guest
       RABBITMQ_PASSWORD: guest
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ''
     restart: on-failure
