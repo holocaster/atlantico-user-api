@@ -16,17 +16,19 @@ public class UserSS implements UserDetails {
 
 	private UUID id;
 	private String email;
+	private String login;
 	private String password;
 	private Collection<? extends GrantedAuthority> authorities;
 
 	public UserSS() {
 	}
 
-	public UserSS(UUID id, String email, String password, Set<PerfilEnum> perfis) {
+	public UserSS(UUID id, String email, String login, String password, Set<PerfilEnum> perfis) {
 		super();
 		this.id = id;
 		this.email = email;
 		this.password = password;
+		this.login = login;
 		this.authorities = perfis.stream().map(x -> new SimpleGrantedAuthority(x.getDescricao()))
 				.collect(Collectors.toList());
 	}
@@ -56,7 +58,7 @@ public class UserSS implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return this.email;
+		return this.login;
 	}
 
 	@Override

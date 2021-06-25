@@ -29,6 +29,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
         Set<PerfilEnum> perfis = new HashSet<>();
         perfis.add(user.isAdmin() ? PerfilEnum.ADMIN : PerfilEnum.USER);
-        return new UserSS(user.getId(), user.getEmail(), user.getPassword(), perfis);
+        return new UserSS(user.getId(), user.getEmail(), user.getLogin(), user.getPassword(), perfis);
     }
 }
