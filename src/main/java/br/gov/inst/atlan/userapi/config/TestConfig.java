@@ -1,7 +1,9 @@
 package br.gov.inst.atlan.userapi.config;
 
+import br.gov.inst.atlan.userapi.cache.AdminUser;
 import br.gov.inst.atlan.userapi.domain.User;
 import br.gov.inst.atlan.userapi.domain.enums.SimNaoEnum;
+import br.gov.inst.atlan.userapi.repositories.AdminUserRepository;
 import br.gov.inst.atlan.userapi.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,14 +19,18 @@ public class TestConfig {
     private UserRepository userRepository;
 
     @Autowired
+    private AdminUserRepository adminUserRepository;
+
+    @Autowired
     private BCryptPasswordEncoder pe;
 
     @Bean
     public boolean instantiateDatabase() {
         this.userRepository.saveAndFlush(User.builder().admin(SimNaoEnum.NAO).email("1@gmail.com").password(this.pe.encode("123")).login("guest")
                 .name("Teste Dev para login").build());
-        this.userRepository.saveAndFlush(User.builder().admin(SimNaoEnum.SIM).email("2@gmail.com").password(this.pe.encode("123")).login("admin")
+        final User user = this.userRepository.saveAndFlush(User.builder().admin(SimNaoEnum.SIM).email("2@gmail.com").password(this.pe.encode("123")).login("admin")
                 .name("Teste admin para login").build());
+        this.adminUserRepository.save(new AdminUser(user.getId()));
         return true;
     }
 

@@ -1,7 +1,10 @@
 package br.gov.inst.atlan.userapi.services;
 
+import br.gov.inst.atlan.userapi.cache.AdminUser;
 import br.gov.inst.atlan.userapi.domain.User;
+import br.gov.inst.atlan.userapi.domain.enums.PerfilEnum;
 import br.gov.inst.atlan.userapi.exceptions.UserNotFoundException;
+import br.gov.inst.atlan.userapi.repositories.AdminUserRepository;
 import br.gov.inst.atlan.userapi.repositories.UserRepository;
 import br.gov.inst.atlan.userapi.rest.v1.dto.UserDTO;
 import br.gov.inst.atlan.userapi.rest.v1.dto.UserDTOPagedList;
@@ -27,6 +30,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AdminUserRepository adminUserRepository;
 
     @Autowired
     private UserMapper userMapper;
@@ -62,16 +68,30 @@ public class UserService {
     public UserDTO insertUser(UserDTO userDTO) {
         userDTO.setId(null);
         User user = this.userMapper.userDtoToUser(userDTO);
-        this.userRepository.save(user);
+        this.userRepository.saveAndFlush(user);
+        if (user.isAdmin()) {
+            this.adminUserRepository.save(new AdminUser(user.getId()));
+        }
         return this.userMapper.userToUserDTO(user);
     }
 
     public void updateUser(UUID userId, UserDTO userDTO) {
-
+        UserSS userSS = UserService.authenticated();
+        if (userSS.hasRole(PerfilEnum.ADMIN)) {
+            log.info("Usuário admin");
+        }
+        // Verifica se o usuário existe na base
+        User user = this.findByUserId(userId);
+        user = this.userMapper.userDtoToUser(userDTO);
+        this.userRepository.saveAndFlush(user);
+        if (user.isAdmin()) {
+            this.adminUserRepository.save(new AdminUser(user.getId()));
+        }
     }
 
     public void deleteUser(UUID userId) {
         User user = this.findByUserId(userId);
         this.userRepository.delete(user);
+        this.adminUserRepository.deleteById(userId);
     }
 }
