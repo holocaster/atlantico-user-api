@@ -30,6 +30,7 @@ public class TestConfig {
                 .name("Teste Dev para login").build());
         final User user = this.userRepository.saveAndFlush(User.builder().admin(SimNaoEnum.SIM).email("2@gmail.com").password(this.pe.encode("123")).login("admin")
                 .name("Teste admin para login").build());
+        this.adminUserRepository.deleteAll();
         this.adminUserRepository.save(new AdminUser(user.getId()));
         return true;
     }

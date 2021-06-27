@@ -29,7 +29,7 @@ public class EmailService {
     public void sendEmail(UUID userId, String email) {
         log.info("Procurando pelo usuário com id {}", userId);
         UserDTO userDTO = this.userService.findById(userId);
-        log.info("Colocando email na fila para usuário com id {} e nome" , userId, userDTO.getName());
+        log.info("Colocando email na fila para usuário com id {} e nome {}" , userId, userDTO.getName());
         this.rabbitTemplate.convertAndSend(this.exchange, this.routingkey, new EmailEvent(userId, email));
     }
 }
