@@ -1,5 +1,6 @@
 package br.gov.inst.atlan.userapi.security;
 
+import br.gov.inst.atlan.userapi.domain.enums.PerfilEnum;
 import br.gov.inst.atlan.userapi.security.dtos.CredenciaisDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,7 +55,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 		UserSS user = (UserSS) authResult.getPrincipal();
-		String token = this.jwtUtil.generateToken(user.getUsername());
+		String token = this.jwtUtil.generateToken(user.getUsername(), user.hasRole(PerfilEnum.ADMIN));
 		response.addHeader("Authorization", "Bearer " + token);
 		response.addHeader("access-control-expose-headers", "Authorization");
 	}
