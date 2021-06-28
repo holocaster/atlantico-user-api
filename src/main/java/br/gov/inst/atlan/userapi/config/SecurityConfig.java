@@ -52,10 +52,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        if (Arrays.asList(env.getActiveProfiles()).contains("dev")) {
-            http.headers().frameOptions().disable();
-        }
-
+        // Somente para teste em memoria com docker, feito para o h2 deixar o h2-console navegavel
+        http.headers().frameOptions().disable();
+        // CORS
         http.cors().and().csrf().disable();
         http.authorizeRequests().antMatchers(PUBLIC_MATCHERS).permitAll()
                 .anyRequest().authenticated();

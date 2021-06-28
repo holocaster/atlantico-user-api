@@ -48,27 +48,23 @@ services:
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://netflix:eureka@eureka:8761/eureka
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: 'true'
-  db:
-    image: postgres:11.12-alpine
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_PASSWORD=password
   user-api:
     image: prcompany/atlantico-user-api
     ports:
       - 8080:8080
     depends_on:
       - jms
-      - db
       - redis
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: reunion
-      DB_USER: postgres
-      DB_PASSWORD: password
+      DB_URL: jdbc:h2:mem:testdb
+      DB_DRIVER_CLASS: org.h2.Driver
+      DB_PLATFORM: org.hibernate.dialect.H2Dialect
+      DB_USER: sa
+      DB_PASSWORD: ''
+      SPRING_H2_CONSOLE_ENABLED: 'true'
+      SPRING_H2_CONSOLE_PATH: '/h2-console'
+      SPRING_H2_CONSOLE_SETTINGS_WEB-ALLOW-OTHERS: 'true'
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://netflix:eureka@eureka:8761/eureka
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: 'true'
       RABBITMQ_HOST: jms
@@ -83,6 +79,10 @@ services:
     image: prcompany/atlantico-kafka-bus
     ports:
       - 8081:8081
+    depends_on:
+      - jms
+      - redis
+      - user-api
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SEVER_PORT: 8081

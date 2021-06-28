@@ -78,8 +78,10 @@ public class UserService {
     @Transactional
     public UserDTO insertUser(UserDTO userDTO) {
         userDTO.setId(null);
-        log.info("Inserindo usuário com nome {} , email {} e login {}", userDTO.getName(), userDTO.getEmail(), userDTO.getLogin());
+        log.info("Inserindo usuário com nome: {} , email: {} e login: {}", userDTO.getName(), userDTO.getEmail(), userDTO.getLogin());
+        userDTO.setPassword(this.pe.encode(userDTO.getPassword()));
         User user = this.userMapper.userDtoToUser(userDTO);
+
         this.userRepository.saveAndFlush(user);
         if (user.isAdmin()) {
             this.adminUserRepository.save(new AdminUser(user.getId()));

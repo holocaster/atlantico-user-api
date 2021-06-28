@@ -14,7 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.stream.Stream;
 
 @Configuration
-@Profile("dev")
 public class TestConfig {
 
     @Autowired
@@ -26,6 +25,7 @@ public class TestConfig {
     @Autowired
     private BCryptPasswordEncoder pe;
 
+    @Profile("dev")
     @Bean
     public boolean instantiateDatabase() {
         Stream.iterate(1, i -> i + 1).limit(15).forEach(number -> {
@@ -33,12 +33,21 @@ public class TestConfig {
                             .name("Teste Dev para login " + number).build());
                 }
         );
+        return true;
+    }
 
+    @Profile("prod")
+    @Bean
+    public boolean createProd() {
+        this.createUserAdmin();
+        return true;
+    }
+
+    private void createUserAdmin() {
         final User user = this.userRepository.saveAndFlush(User.builder().admin(SimNaoEnum.SIM).email("admin@gmail.com").password(this.pe.encode("123")).login("admin")
                 .name("Teste admin para login").build());
         this.adminUserRepository.deleteAll();
         this.adminUserRepository.save(new AdminUser(user.getId()));
-        return true;
     }
 
 }

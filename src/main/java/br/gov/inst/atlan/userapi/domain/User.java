@@ -63,6 +63,7 @@ public class User {
             this.password = userDTO.getPassword();
         }
         this.admin = userDTO.getAdmin();
+        this.email = userDTO.getEmail();
     }
 
 }
