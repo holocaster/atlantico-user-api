@@ -19,7 +19,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class UserDTO implements Serializable {
-    @Null
     private UUID id;
 
     @NotNull
@@ -28,7 +27,6 @@ public class UserDTO implements Serializable {
     @NotNull
     private String login;
 
-    @NotNull
     private String password;
 
     @Null

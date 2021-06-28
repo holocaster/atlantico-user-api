@@ -3,6 +3,7 @@ package br.gov.inst.atlan.userapi.services;
 import br.gov.inst.atlan.userapi.cache.AdminUser;
 import br.gov.inst.atlan.userapi.domain.User;
 import br.gov.inst.atlan.userapi.domain.enums.PerfilEnum;
+import br.gov.inst.atlan.userapi.exceptions.UserNotAdminException;
 import br.gov.inst.atlan.userapi.exceptions.UserNotFoundException;
 import br.gov.inst.atlan.userapi.repositories.AdminUserRepository;
 import br.gov.inst.atlan.userapi.repositories.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,9 @@ public class UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private BCryptPasswordEncoder pe;
 
     /**
      * Retorna o usuário vinculado a sessão
@@ -86,12 +91,17 @@ public class UserService {
 
     public void updateUser(UUID userId, UserDTO userDTO) {
         UserSS userSS = UserService.authenticated();
-        if (userSS.hasRole(PerfilEnum.ADMIN)) {
-            log.info("Usuário admin");
+        boolean hasPassword = userDTO.getPassword() != null && !userDTO.getPassword().isBlank();
+        if (hasPassword) {
+            userDTO.setPassword(this.pe.encode(userDTO.getPassword()));
+        }
+        if (!userSS.hasRole(PerfilEnum.ADMIN) && hasPassword) {
+            log.info("Usuário não é admin");
+            throw new UserNotAdminException(userSS.getId().toString());
         }
         // Verifica se o usuário existe na base
         User user = this.findByUserId(userId);
-        user = this.userMapper.userDtoToUser(userDTO);
+        user.update(userDTO);
         this.userRepository.saveAndFlush(user);
         if (user.isAdmin()) {
             this.adminUserRepository.save(new AdminUser(user.getId()));

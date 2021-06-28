@@ -1,6 +1,7 @@
 package br.gov.inst.atlan.userapi.domain;
 
 import br.gov.inst.atlan.userapi.domain.enums.SimNaoEnum;
+import br.gov.inst.atlan.userapi.rest.v1.dto.UserDTO;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -53,6 +54,15 @@ public class User {
 
     public boolean isAdmin() {
         return SimNaoEnum.SIM.equals(this.admin);
+    }
+
+    public void update(UserDTO userDTO) {
+        this.name = userDTO.getName();
+        this.login = userDTO.getLogin();
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            this.password = userDTO.getPassword();
+        }
+        this.admin = userDTO.getAdmin();
     }
 
 }

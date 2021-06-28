@@ -1,7 +1,7 @@
 package br.gov.inst.atlan.userapi.rest.handlers;
 
+import br.gov.inst.atlan.userapi.exceptions.UserNotAdminException;
 import br.gov.inst.atlan.userapi.exceptions.UserNotFoundException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -34,6 +34,11 @@ public class RestExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotAdminException.class)
+    public ResponseEntity<String> handleUserNotAdminException(UserNotAdminException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário logado não tem perfil de administrador");
     }
 
 }
