@@ -54,12 +54,18 @@ public class UserService {
     }
 
     public UserDTO findById(UUID userId) {
-        return this.userMapper.userToUserDTO(this.findByUserId(userId));
+        UserDTO userDTO = this.userMapper.userToUserDTO(this.findByUserId(userId));
+        userDTO.setPassword(null);
+        return userDTO;
     }
 
     public UserDTOPagedList listUsers(PageRequest pageRequest) {
         Page<User> userPage = this.userRepository.findAll(pageRequest);
-        Stream<UserDTO> userDTOStream = userPage.getContent().stream().map(this.userMapper::userToUserDTO);
+        Stream<UserDTO> userDTOStream = userPage.getContent().stream().map(user -> {
+            UserDTO userDTO = this.userMapper.userToUserDTO(user);
+            userDTO.setPassword(null);
+            return userDTO;
+        });
         return new UserDTOPagedList(userDTOStream.collect(Collectors.toList()), PageRequest.of(userPage.getPageable().getPageNumber(), userPage.getPageable().getPageSize()),
                 userPage.getTotalElements());
     }
@@ -67,12 +73,15 @@ public class UserService {
     @Transactional
     public UserDTO insertUser(UserDTO userDTO) {
         userDTO.setId(null);
+        log.info("Inserindo usuário com nome {} , email {} e login {}", userDTO.getName(), userDTO.getEmail(), userDTO.getLogin());
         User user = this.userMapper.userDtoToUser(userDTO);
         this.userRepository.saveAndFlush(user);
         if (user.isAdmin()) {
             this.adminUserRepository.save(new AdminUser(user.getId()));
         }
-        return this.userMapper.userToUserDTO(user);
+        userDTO = this.userMapper.userToUserDTO(user);
+        userDTO.setPassword(null);
+        return userDTO;
     }
 
     public void updateUser(UUID userId, UserDTO userDTO) {
@@ -90,6 +99,7 @@ public class UserService {
     }
 
     public void deleteUser(UUID userId) {
+        log.info("Apagando usuário com id {}", userId);
         User user = this.findByUserId(userId);
         this.userRepository.delete(user);
         this.adminUserRepository.deleteById(userId);
