@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.stream.Stream;
+
 @Configuration
 @Profile("dev")
 public class TestConfig {
@@ -26,9 +28,13 @@ public class TestConfig {
 
     @Bean
     public boolean instantiateDatabase() {
-        this.userRepository.saveAndFlush(User.builder().admin(SimNaoEnum.NAO).email("1@gmail.com").password(this.pe.encode("123")).login("guest")
-                .name("Teste Dev para login").build());
-        final User user = this.userRepository.saveAndFlush(User.builder().admin(SimNaoEnum.SIM).email("2@gmail.com").password(this.pe.encode("123")).login("admin")
+        Stream.iterate(1, i -> i + 1).limit(15).forEach(number -> {
+                    this.userRepository.saveAndFlush(User.builder().admin(SimNaoEnum.NAO).email(number + "@gmail.com").password(this.pe.encode("123")).login("guest" + number)
+                            .name("Teste Dev para login " + number).build());
+                }
+        );
+
+        final User user = this.userRepository.saveAndFlush(User.builder().admin(SimNaoEnum.SIM).email("admin@gmail.com").password(this.pe.encode("123")).login("admin")
                 .name("Teste admin para login").build());
         this.adminUserRepository.deleteAll();
         this.adminUserRepository.save(new AdminUser(user.getId()));
