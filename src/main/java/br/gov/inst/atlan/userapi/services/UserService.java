@@ -89,6 +89,7 @@ public class UserService {
         return userDTO;
     }
 
+    @Transactional
     public void updateUser(UUID userId, UserDTO userDTO) {
         UserSS userSS = UserService.authenticated();
         boolean hasPassword = userDTO.getPassword() != null && !userDTO.getPassword().isBlank();
@@ -108,6 +109,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void deleteUser(UUID userId) {
         log.info("Apagando usuário com id {}", userId);
         User user = this.findByUserId(userId);
