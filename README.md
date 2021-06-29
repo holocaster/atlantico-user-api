@@ -21,6 +21,8 @@ o usuário administrador.
   Não deixar o hibernate criar sozinho as tabelas em produção.
 * Usar um servidor de SSO (Exemplo RedHat Keycloak) para ter um ponto central de autenticação e autorização. 
 * Implementar a parte de testes da aplicação. (O mais importante de todos)
+* Melhorar logs da aplicação
+* Colocar javaDocs em alguns métodos
 * Melhorar parte de exceção para envio de mensagens para o front-end. Por exemplo:
   * Quando o login/email for igual ao um já existente
 
