@@ -33,6 +33,7 @@ public class TestConfig {
                             .name("Teste Dev para login " + number).build());
                 }
         );
+        this.createUserAdmin();
         return true;
     }
 

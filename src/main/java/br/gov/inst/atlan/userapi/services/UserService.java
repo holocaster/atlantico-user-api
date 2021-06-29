@@ -59,6 +59,7 @@ public class UserService {
     }
 
     public UserDTO findById(UUID userId) {
+        log.info("Procurando usuario com id {}", userId);
         UserDTO userDTO = this.userMapper.userToUserDTO(this.findByUserId(userId));
         userDTO.setPassword(null);
         return userDTO;

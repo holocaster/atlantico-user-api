@@ -12,16 +12,21 @@ esta informação.
 * Para profile dev foram criados vários usuários e somente um administrador. No profile prod é criado somente
 o usuário administrador.
   
+* Todas as senhas são guardadas criptografadas.
+  
 ## Pontos de melhoria
 
-* Coloca a linha 56 do arquivo SecurityConfig.java somente para profile de dev. Deixei desta maneira somente para
+* Colocar a linha 56 do arquivo SecurityConfig.java somente para profile de dev. Deixei desta maneira somente para
   o projeto rodar com o database h2 dentro do docker. O correto é ter uma instância de banco, criar o database, as tabelas. 
   Não deixar o hibernate criar sozinho as tabelas em produção.
 * Usar um servidor de SSO (Exemplo RedHat Keycloak) para ter um ponto central de autenticação e autorização. 
 * Implementar a parte de testes da aplicação. (O mais importante de todos)
+* Melhorar parte de exceção para envio de mensagens para o front-end. Por exemplo:
+  * Quando o login/email for igual ao um já existente
 
 ## Rodando o projeto
 
 * O projeto pode ser rodado de maneira local usando o docker-compose através do arquivo
   [docker](https://github.com/holocaster/atlantico-user-api/blob/master/src/main/docker/docker-compose.yml)
+  * Commando: "docker-compose -f <NOME_ARQUIVO> up -d
 

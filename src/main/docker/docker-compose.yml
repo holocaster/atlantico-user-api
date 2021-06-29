@@ -39,6 +39,10 @@ services:
     image: prcompany/atlantico-discovery-server
     ports:
       - 8761:8761
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - 9411:9411
   config:
     image: prcompany/atlantico-config-server
     ports:
@@ -74,6 +78,8 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ''
+      ZIPKIN_HOST: zipkin
+      ZIPKIN_PORT: 9411
     restart: on-failure
   kafka-bus:
     image: prcompany/atlantico-kafka-bus
@@ -96,4 +102,6 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: ''
       KAFKA_BROKERS: broker:9092
+      ZIPKIN_HOST: zipkin
+      ZIPKIN_PORT: 9411
     restart: on-failure
